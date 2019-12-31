@@ -11,7 +11,7 @@ environment:
 build: off
 
 install:
-- pip install tox
+- pip install tox --user
 - make init
 
 test_script:
