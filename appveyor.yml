@@ -11,10 +11,6 @@ environment:
 build: off
 
 install:
-- sh: "which python3.8"
-- sh: "which python3.6"
-- sh: "which python3.7"
-- sh: "which python2.7"
 - sh: "PATH=$PATH:/usr/bin/python3.8:/usr/bin/python3.7"
 - pip install tox --user
 - make init
