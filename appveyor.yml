@@ -11,7 +11,8 @@ environment:
 build: off
 
 install:
-- pip install tox --user
+- sh: pip install tox --user
+- sh: "PATH=/home/appveyor/.local/bin:$PATH"
 
 test_script:
 - tox
