@@ -1,19 +1,55 @@
 version: 1.0.{build}
-image: Ubuntu
+image:
+  - Ubuntu
 
 environment:
+  AWS_DEFAULT_REGION: us-east-1
+  SAM_CLI_DEV: 1
+
   matrix:
   - TOXENV: py27
   - TOXENV: py36
   - TOXENV: py37
   - TOXENV: py38
 
-build: off
+for:
+  -
+    matrix:
+      only:
+        - image: Ubuntu
 
-install:
-- sh: "PATH=$PATH:/usr/bin/python3.8:/usr/bin/python3.7"
-- pip install tox --user
-- make init
+    install:
+      - sh: "source ${HOME}/venv${PYTHON_VERSION}/bin/activate"
+      - sh: "rvm use 2.5"
 
-test_script:
-- tox
+      # Install black
+      - sh: "wget -O /tmp/black https://github.com/python/black/releases/download/19.3b0/black"
+      - sh: "chmod +x /tmp/black"
+      - sh: "/tmp/black --version"
+
+      # Install AWS CLI
+      - sh: "sudo apt-get -y install python3.6"
+      - sh: "sudo apt-get -y install python2.7"
+      - sh: "sudo apt-get -y install python3.7"
+      - sh: "sudo apt-get -y install python3.8"
+
+      - sh: "which python3.8"
+      - sh: "which python3.6"
+      - sh: "which python3.7"
+      - sh: "which python2.7"
+
+      - sh: "PATH=$PATH:/usr/bin/python3.8:/usr/bin/python3.7"
+      - sh: "curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py"
+
+      - sh: "sudo apt-get -y install python3-distutils"
+      - ps: "If ($env:INSTALL_PY_38_PIP) {python3.8 get-pip.py --user}"
+      - ps: "If ($env:INSTALL_PY_37_PIP) {python3.7 get-pip.py --user}"
+      - ps: "If ($env:INSTALL_PY_36_PIP) {python3.6 get-pip.py --user}"
+
+    build: off
+
+    test_script:
+      # Runs only in Linux
+      - sh: "make pr"
+      - sh: "codecov"
+      - sh: "/tmp/black --check setup.py tests samcli scripts"
