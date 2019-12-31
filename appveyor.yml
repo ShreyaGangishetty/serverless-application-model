@@ -13,6 +13,6 @@ build: off
 install:
 - sh: pip install tox --user
 - sh: "PATH=/home/appveyor/.local/bin:$PATH"
-
+- sh: make init
 test_script:
 - tox
